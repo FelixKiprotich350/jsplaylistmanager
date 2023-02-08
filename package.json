@@ -1,0 +1,32 @@
+{
+  "name": "playlistmanager",
+  "version": "1.0.0",
+  "description": "A simple file explorer implemented with node.js modules, you can navigate through folders and open files.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "felix",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^22.0.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.8.1",
+    "fs-extra": "^11.1.0",
+    "mp3-duration": "^1.1.0",
+    "mp3tag.js": "^3.3.2",
+    "music-metadata-browser": "^2.5.9",
+    "node-id3": "^0.2.5",
+    "prisma": "^4.8.1",
+    "seratojs": "^3.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "playlistmanager"
+  },
+  "keywords": [
+    "playlist"
+  ]
+}

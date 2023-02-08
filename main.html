@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Playlist Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="./js/jquery-1.7.2.js"></script>
+    <script src="./renderer.js"></script>
+    <style>
+        .myrow {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body style="margin: 0px;">
+    <div style="position: absolute; left: 0px; right: 0px; height: 95%;">
+        <div class="well" style="float: left; width: 160px;height: 100%; padding: 4px;">
+            <ul class="nav nav-list">
+                <li class="nav-header">My PlayList</li>
+                <li id="btn_defaultplaylist" data-playlistid="0"><a href="#"><i class="icon-music"></i>Default
+                        Playlist</a>
+                <li class="divider"></li>
+            </ul>
+            <ul class="nav nav-list" id="sidebar_playlist">
+
+            </ul>
+            <div style="position: absolute; bottom: 0px;">
+                <ul class="nav nav-list" id="sidebar">
+                    <li class="divider"></li>
+                    <li id="btn_myfavourites"><a href="#"><i class="icon-heart "></i> My Favourites</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li id="btn_addplaylist"><a href="#"><i class="icon-plus  "></i> Add Playlist</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div style="float: left; position: absolute; left: 172px; right: 0; top: 0; bottom: 0px;height: 100%;">
+            <div class="well" style="height: 3%;margin-bottom: 1px;margin-top: 2px;padding: 16px;">
+                <input id="input_searchbox" placeholder="Search track by : name , bpm , artist or album keywords" 
+                    style="border-radius:4px; padding: 4px;font-size: medium;border-color: grey; width: 100%; text-align: left;">
+            </div>
+            <div class="row" id="mytablediv" style="background: #FFF;  margin: 4px; height:80%; overflow: auto">
+                <table id="myTable" class="table">
+                    <thead style="background-color: rgb(50, 160, 74);color: #FFF; ">
+                        <th style="width: 3%; min-width: 15px; max-width: 15px;"></th>
+                        <th style="width: 50%;max-width: 50%;">File Name </th>
+                        <th style="width: 10%;max-width: 10%;">length </th>
+                        <th style="width: 10%;max-width: 10%;">bpm</th>
+                        <th style="width: 14%; max-width: 14%;">artist</th>
+                        <th style="width: 10%; max-width: 10%;">album</th>
+                        <th style="width: 3%; min-width: 20px; max-width: 25px;"></th>
+                    </thead>
+                    <tbody id="tableBody" style="height: auto">
+                    </tbody>
+                </table>
+                <ul style="margin: 5px;" id="files"></ul>
+            </div>
+            <div style="height: 15%;">
+                <div id="trackimage"
+                    style="margin: 2px;height: 100%; text-align: center;overflow: hidden;  border-radius: 8px;">
+
+                    <div class="myrow" style="height: 100%;background-color: lightgray;">
+                        <div style="flex: 15%;background-color: rgb(215, 238, 237); padding: 4px;">
+                            <img id="albumimage" style="border-radius: 8px;display: block; 
+                            height: 100%; width: 100%;" src="./images/musicimage.jpg">
+                        </div>
+                        <div id="playlistnamecontainer" style="flex: 85%;">
+                            <div class=" well"
+                                style="margin-left: 2px;padding: 8px;height:100% ;align-items: center;align-content: center;vertical-align: middle;">
+                                <audio controls autoplay id="myAudioPlayer" style="width: 98%;"></audio>
+                                <p>
+                                    <marquee id="trackmarquee" style="width: 100%;"></marquee>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- <script src="./renderme.js"></script> -->
+
+</html>

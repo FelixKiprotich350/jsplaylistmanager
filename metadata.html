@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Track Metadata</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="./multiselecttag/css/multi-select-tag.css" rel="stylesheet">
+    <script type="text/javascript" src="./multiselecttag/js/multi-select-tag.js"></script>
+    <script defer src="./metarenderer.js"></script>
+    <script src="./multiselecttag/js/multi-select-tag.js"></script>
+    <style>
+        * {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: rgb(230, 224, 224);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Add padding to containers */
+        .container {
+            padding: 8px;
+        }
+
+        /* Full-width input fields */
+        input[type=text],
+        input[type=number] {
+            width: 100%;
+            padding: 16px;
+            margin: 4px 0 4px 0;
+            display: inline-block;
+            border: 1px solid;
+            border-color: rgb(223, 218, 218);
+            color: black;
+            background: white;
+        }
+
+        input[type=text]:focus {
+            background-color: rgb(245, 227, 227);
+
+        }
+
+        /* Overwrite default styles of hr */
+        hr {
+            border: 1px solid #f1f1f1;
+            margin-bottom: 25px;
+        }
+
+        /* Set a style for the submit button */
+        .btnsave {
+            background-color: #04AA6D;
+            color: white;
+            padding: 16px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            opacity: 0.9;
+            width: 100px;
+        }
+
+        .registerbtn {
+            background-color: #04AA6D;
+            color: white;
+            padding: 16px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            opacity: 0.9;
+            width: 100px;
+        }
+
+        .registerbtn:hover {
+            opacity: 1;
+        }
+
+        .myrow {
+            display: flex;
+            margin-top: 2px;
+        }
+
+        /* Create two equal columns that sits next to each other */
+        .halfcolumn {
+            flex: 50%;
+            padding: 4px;
+            /* Should be removed. Only for demonstration */
+        }
+
+        .athirdcolumn {
+            flex: 33.3%;
+            padding: 2px;
+            /* Should be removed. Only for demonstration */
+        }
+
+        .quartercolumn {
+            flex: 25%;
+            padding: 2px;
+            /* Should be removed. Only for demonstration */
+        }
+
+        .btn-add {
+            margin-right: 50px;
+            margin-bottom: 2px;
+            flex: initial;
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="width: 100%;">
+
+        <div class="row" style="padding-left: 20px;">
+
+            <label><b>File Location</b></label>
+            <input type="text" id="tracklocation" readonly>
+            <label><b>Title</b></label>
+            <input type="text" id="title"> 
+            <div class="row" style="padding-left: 20px">
+                <div class="myrow">
+                    <div class="quartercolumn">
+                        <label><b>Album</b></label>
+                        <input type="text" id="album">
+                    </div>
+                    <div class="quartercolumn">
+                        <label><b>Year</b></label>
+                        <input type="number" id="year">
+                    </div>
+                    <div class="quartercolumn">
+                        <label><b>BPM</b></label>
+                        <input type="number" id="bpm">
+                    </div>
+                    <div class="quartercolumn">
+                        <label><b>Key</b></label>
+                        <input type="number" id="key">
+                    </div>
+                </div>
+
+            </div>
+            <div hidden class="row" style="padding-left: 20px">
+                <div class="myrow">
+                    <div class="athirdcolumn">
+                        <label><b>plays</b></label>
+                        <input type="text" id="plays">
+                    </div>
+                    <div class="athirdcolumn">
+                        <label><b>bitrate</b></label>
+                        <input type="text" id="bitrate">
+                    </div>
+                    <div class="athirdcolumn">
+                        <label><b>samplerate</b></label>
+                        <input type="text" id="samplerate">
+                    </div>
+                </div>
+
+            </div>
+            <label><b>Comments</b></label>
+            <input type="text" id="comments">
+            <div class="row" style="padding-left: 20px">
+                <div class="myrow">
+                    <div class="quartercolumn">
+                        <label><b>size</b></label>
+                        <input type="text" id="size" readonly>
+                    </div>
+                    <div class="quartercolumn">
+                        <label><b>length</b></label>
+                        <input type="text" id="length" readonly>
+                    </div>
+                    <div class="quartercolumn">
+                        <label><b>Filetype</b></label>
+                        <input type="text" id="filetype" readonly>
+                    </div>
+
+                    <div class="quartercolumn">
+                        <label><b>created at</b></label>
+                        <input type="text" id="createdat" readonly>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Artist</b></label>
+                <button class="btn-add" id="btn_addartist">Add</button>
+            </div>
+            <div id="artist_div">
+                <select id="artist" multiple>
+
+                </select>
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Genre</b></label>
+                <button id="btn_addgenre" class="btn-add">Add</button>
+            </div>
+            <div id="genrecontainer">
+                <select id="genre" multiple>
+
+                </select>
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Grouping</b></label>
+                <button class="btn-add" id="btn_addGrouping">Add</button>
+            </div>
+            <div id="grouping_div">
+                <select id="grouping" multiple>
+
+                </select>
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Remixer</b></label>
+                <button class="btn-add" id="btn_addRemixer">Add</button>
+            </div>
+            <div id="remixer_div">
+                <select id="remixer" multiple>
+
+                </select>
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Composer</b></label>
+                <button class="btn-add" id="btn_addComposer">Add</button>
+            </div>
+            <div id="composer_div">
+                <select id="composer" multiple>
+
+                </select>
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Mood</b></label>
+                <button class="btn-add" id="btn_addMood">Add</button>
+            </div>
+            <div id="mood_div">
+                <select id="mood" multiple>
+
+                </select>
+            </div>
+
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Timing</b></label>
+                <button class="btn-add" id="btn_addTiming">Add</button>
+            </div>
+            <div id="timing_div">
+                <select id="timing" multiple>
+                     
+                </select>
+            </div>
+            <div class="myrow">
+                <label style="flex: 30%;"><b>Cover Image</b></label>
+                <button class="btn-add" id="btn_selectimage">Select</button>
+            </div>
+            <div id="image_div">
+                <img src="" id="img_coverimage" style="height: 200px;width: 100%;" alt="No cover Image">
+            </div>
+            <hr>
+        </div>
+
+        <div class="row" style="padding-left: 20px;">
+            <div class="myrow" style="align-items: center;align-content: center;text-align: center;">
+                <div class="halfcolumn">
+                    <button id="btnsave">Save metadata</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div> 
+</body>
+
+</html>

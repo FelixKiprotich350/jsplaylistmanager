@@ -1,0 +1,179 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+// Track
+// Track can have many genres, labels, comments, contentGroups
+model Track {
+  id         Int       @id @default(autoincrement())
+  title      String?
+  createdAt  DateTime
+  location   String    @unique
+  bpm        String?
+  album      String?
+  fileType   String?
+  initialKey String?
+  length     String?
+  size       String?
+  year       String?
+  plays      String?
+  biterate   String?
+  samplerate String?
+  like       Boolean
+  pinned     Boolean
+  updateDate DateTime
+  @@unique([id, location])
+}
+
+// Artist
+model Artist {
+  id       Int     @id
+  name     String? @unique
+}
+
+// Artist on Track
+model ArtistsOnTrack {
+  id       String @id
+  trackId  String
+  artistId String
+
+  @@unique([trackId, artistId])
+}
+
+// Genre
+model Genre {
+  id   Int    @id
+  name String @unique
+}
+
+// genre to track
+model GenreOnTrack {
+  id        Int     @id
+  genreId   String
+  trackId   String
+  createdAt String?
+
+  @@unique([genreId, trackId])
+}
+
+// Label
+model Label {
+  id   Int    @id
+  name String @unique
+}
+
+// Label On Track
+model LabelOnTrack {
+  id      Int    @id
+  labelId String
+  trackId String
+
+  @@unique([labelId, trackId])
+}
+
+// Grouping
+model Group {
+  id   Int    @id
+  name String @unique
+}
+
+// Groups on each track
+model GroupOnTrack {
+  id      Int    @id
+  groupId String
+  trackId String
+
+  @@unique([groupId, trackId])
+}
+
+// composer
+model Composer {
+  id   Int    @id
+  name String @unique
+}
+
+// composer on each track
+model ComposerOnTrack {
+  id         Int    @id
+  composerId String
+  trackId    String
+
+  @@unique([composerId, trackId])
+}
+
+// Remixer
+model Remixer {
+  id   Int    @id
+  name String @unique
+}
+
+// remixer on each track
+model RemixerOnTrack {
+  id        Int    @id
+  remixerId String
+  trackId   String
+
+  @@unique([remixerId, trackId])
+}
+
+// comments
+model Comment {
+  id   Int    @id
+  name String @unique
+}
+
+// comments on each track
+model CommentOnTrack {
+  id        Int    @id
+  commentId String
+  trackId   String
+
+  @@unique([commentId, trackId])
+}
+
+model Playlist {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+ 
+model PlaylistOnTrack {
+  id         Int    @id @default(autoincrement())
+  playlistId String
+  trackId    String
+
+  @@unique([playlistId, trackId])
+}
+model Mood {
+  id   String @id
+  name String @unique
+}
+
+model moodOnTrack {
+  id      Int    @id
+  moodId  String
+  trackId String
+
+  @@unique([moodId, trackId])
+}
+
+model Timing {
+  id   String @id
+  name String @unique
+}
+
+model timingOnTrack {
+  id       Int    @id
+  timingId String
+  trackId  String
+
+  @@unique([timingId, trackId])
+}
