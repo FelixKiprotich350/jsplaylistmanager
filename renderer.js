@@ -7,10 +7,14 @@ document.addEventListener('readystatechange', (event) => {
       //alert("i am ready");
       try {
          document.getElementById("btn_myfavourites").addEventListener("click", function (event) {
-            getfavtracks();
+            
+            getfavtracks(this);
          });
          document.getElementById("btn_addplaylist").addEventListener("click", function (event) {
             addnewplaylist()
+         });
+         document.getElementById("btn_allfiles").addEventListener("click", function (event) {
+            getalltracks(this)
          });
          var def_playlist = document.getElementById("btn_defaultplaylist");
          def_playlist.addEventListener('click', function (ev) {
@@ -78,15 +82,48 @@ document.addEventListener('readystatechange', (event) => {
       //alert("not ready");
    }
 });
-
-async function getfavtracks() {
+ipcRenderer.on('newplaylistadded', async (event, arg) => {
    try {
-      var x = await ClearTracksontable();
-      if (!x) {
-         return;
+      displayplaylists(arg);
+   }
+   catch (error) {
+      ipcRenderer.invoke('showMessageBox', error)
+   }
+})
+ipcRenderer.on('onplaylistdeleted', async (event, arg) => {
+   try {
+      // Get the table body element in which you want to add row
+      let myul = document.getElementById("sidebar_playlist");
+      const playlists = document.querySelectorAll('li[data-playlistid="' + arg.id.toString() + '"]');
+      if (playlists.length > 0) {
+         playlists[0].remove();
       }
+   }
+   catch (error) {
+      ipcRenderer.invoke('showMessageBox', error)
+   }
+})
+async function getfavtracks(element) {
+   try {
+       markactiveplaylist(element)
       var tracks = await ipcRenderer.invoke('getfavouritetracks');
       if (tracks != "errror") {
+         tracks.forEach(element => {
+            addTracktoTable(element)
+         });
+      }
+      else {
+         alert("Error occured while getting the tracks!")
+      }
+   } catch (error) {
+      alert(err)
+   }
+}
+async function getalltracks(element) {
+   try {
+       markactiveplaylist(element)
+      var tracks = await ipcRenderer.invoke('getalltracks');
+      if (tracks != "error") {
          tracks.forEach(element => {
             addTracktoTable(element)
          });
@@ -111,7 +148,7 @@ async function addnewtracksonplaylist(files) {
          alert("You have not selected a playlist!\n The tracks will be added to the default playlist!");
          play_id = "0";
          return;
-      }
+      } 
       var args = { playlistid: play_id, tracks: mfiles }
       var result = await ipcRenderer.invoke('addtrackstoplaylist', args);
       if (result) {
@@ -124,9 +161,9 @@ async function addnewtracksonplaylist(files) {
       alert(error)
    }
 }
-function addnewplaylist() {
+async function addnewplaylist() {
    try {
-      ipcRenderer.invoke('showaddplaylistwindow')
+      await ipcRenderer.invoke('showaddplaylistwindow')
    }
    catch (error) {
       alert(error);
@@ -188,7 +225,8 @@ async function playlistclicked(element) {
 
       let mytable = document.getElementById("myTable");
       let mytablediv = document.getElementById("mytablediv");
-      var liElements = document.querySelectorAll("#sidebar_playlist li");
+      markactiveplaylist(element)
+     /*  var liElements = document.querySelectorAll("#sidebar_playlist li");
       liElements.forEach(i => {
          //remove the active element
          i.classList.remove("active");
@@ -206,7 +244,7 @@ async function playlistclicked(element) {
       let player = document.getElementById("myAudioPlayer").setAttribute("src", "");
       let playertitle = document.getElementById("trackmarquee");
       playertitle.innerText = "";
-
+ */
       //set playlist id
       mytable.setAttribute("data-playlistid", pl_id)
       mytablediv.setAttribute("data-playlistid", pl_id)
@@ -322,7 +360,7 @@ async function addTracktoTable(track) {
          e.preventDefault()
          var pid = myTable.getAttribute("data-playlistid")
          if (pid == null) {
-            alert("The playlist is Uknown")
+            alert("The playlist is Uknown. You cant Edit this Track!")
             return;
          }
          var x = await ipcRenderer.invoke('show_track_contextmenu', [track.location, pid])
@@ -346,17 +384,17 @@ async function getclickedsong(track) {
       var tags = await ipcRenderer.invoke('readtags', songpath)
       var albumimage = document.getElementById("albumimage");
       if (tags != null) {
-         if (tags.image != null) { 
+         if (tags.image != null) {
             let base64Image = Buffer.from(tags.image.imageBuffer).toString('base64');
             let imageTagsrc = "data:" + tags.image.imageBuffer.mime + ';base64,' + base64Image;
             albumimage.setAttribute('src', imageTagsrc)
          }
-         else{
-            albumimage.setAttribute('src','./images/musicimage.jpg')
+         else {
+            albumimage.setAttribute('src', './images/musicimage.jpg')
          }
       }
-      else{
-         albumimage.setAttribute('src','./images/musicimage.jpg')
+      else {
+         albumimage.setAttribute('src', './images/musicimage.jpg')
       }
       var tracktitle = document.getElementById("trackmarquee");
       tracktitle.innerText = songpath;
@@ -366,6 +404,33 @@ async function getclickedsong(track) {
       alert(error.message)
    }
 
+}
+async function markactiveplaylist(lielement){
+   try {  
+      var liElements = document.querySelectorAll("#sidebar_playlist li");
+      liElements.forEach(i => {
+         //remove the active element
+         i.classList.remove("active");
+      })
+      //remove default playlist active attribute
+      document.getElementById("btn_defaultplaylist").classList.remove("active"); 
+      document.getElementById("btn_allfiles").classList.remove("active");
+      document.getElementById("btn_myfavourites").classList.remove("active")
+      //make the clicked item active
+      lielement.classList.add("active");
+      var x = await ClearTracksontable();
+      if (!x) {
+         return;
+      }
+      //stop playingitem
+      document.getElementById("myAudioPlayer").setAttribute("src", "");
+      let playertitle = document.getElementById("trackmarquee");
+      playertitle.innerText = "";
+ 
+   }
+   catch (error) {
+      alert(error.message);
+   }
 }
 async function ClearTracksontable() {
    try {

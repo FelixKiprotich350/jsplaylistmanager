@@ -50,14 +50,16 @@ app.on('window-all-closed', () => {
 });
 ipcMain.handle('showMessageBox', async (event, arg) => {
   const { dialog } = require('electron')
+  
   const options = {
     type: "info",
-    buttons: ["Okay", "Cancel", "No"],
+    buttons: ["Okay"],
     title: "Message Box!",
     message: arg
   }
-
-  dialog.showMessageBox(win, options)
+  
+var parent_window=BrowserWindow.getFocusedWindow();
+  dialog.showMessageBox(parent_window, options)
 });
 
 
@@ -114,6 +116,9 @@ ipcMain.handle('selectcoverimage', async (event, arg) => {
 ipcMain.handle("getfavouritetracks", async (event) => {
   return await getfavtracks();
 });
+ipcMain.handle("getalltracks", async (event) => {
+  return await getalltracks();
+});
 async function getfavtracks() {
   try {
     prisma.$connect();
@@ -133,6 +138,28 @@ async function getfavtracks() {
       }
     })
     return c;
+  } catch (error) {
+    console.log(error);
+    return "error";
+  }
+}
+async function getalltracks() {
+  try {
+    prisma.$connect();
+    const tracks = await prisma.track.findMany({});
+    tracks.forEach(item=>{
+      if(item.title==null){
+        item.title = path.basename(item.location);
+      }
+      else{
+        if(item.title.trim()==""){
+          item.title = path.basename(item.location);
+        }
+      }
+    })
+    prisma.$disconnect();
+    const final = tracks.sort((a, b) => b.pinned - a.pinned);
+    return final;
   } catch (error) {
     console.log(error);
     return "error";
@@ -384,6 +411,9 @@ async function updatemetadata(trackpath) {
 }
 async function remove_Track_fromplaylist(arg) {
   try {
+    if(arg==null){
+      return;
+    }
     prisma.$connect();
     const track = await prisma.track.findFirst({
       where: {
@@ -486,6 +516,9 @@ async function shownewselectwindow(title) {
         width: 300,
         height: 150,
         modal: true,
+        maximizable:false,
+        minimizable:false,
+        resizable:false,
         parent: metawindow,
         alwaysOnTop: true,
         webPreferences: {
@@ -702,9 +735,9 @@ async function getplaylists_tracks(playlistid) {
         }
         tracks.push(y);
       }
-    }
-    const final = tracks.sort((a, b) => b.pinned - a.pinned);
+    } 
     await prisma.$disconnect();
+    const final = tracks.sort((a, b) => b.pinned - a.pinned);
     return final;
 
   }
@@ -819,6 +852,9 @@ async function showrenameplaylistwindow(playlistid) {
         width: 300,
         height: 200,
         modal: true,
+        maximizable:false,
+        minimizable:false,
+        resizable:false,
         parent: metawindow,
         alwaysOnTop: true,
         webPreferences: {
@@ -868,15 +904,18 @@ async function renameplaylistondb(playlistname) {
 }
 async function addplaylist(playlistname) {
   try {
-    const user = await prisma.playlist.create({
+    const playlist = await prisma.playlist.create({
       data: {
         name: playlistname,
       }
     })
-    console.log(user)
+    console.log(playlist)
+    win.webContents.send('newplaylistadded',playlist);
+    BrowserWindow.getFocusedWindow().close();
     return true;
   }
   catch (error) {
+    console.log(error)
     return error;
   }
 }
@@ -888,6 +927,7 @@ async function deleteplaylist(playlistid) {
       }
     })
     console.log(playlist)
+    win.webContents.send('onplaylistdeleted',playlist);
     return true;
   }
   catch (error) {

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         displaymetadata();
 
         document.getElementById("btnsave").addEventListener('click', async event => {
+           
             await Updatemetadata();
         }) 
 
@@ -236,7 +237,12 @@ async function Updatemetadata() {
         var finalobject = { trackpath: track, tags }
         var x = ipcRenderer.invoke('updatemetadata', finalobject)
         x.then(result => {
-            alert(result)
+            if(result==true){
+                ipcRenderer.invoke('showMessageBox',"Track Metadata Updated!")
+            }
+            else{
+                alert( result)
+            }
         }).catch(error => {
             alert(error);
         })
